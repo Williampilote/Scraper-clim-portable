@@ -1,0 +1,38 @@
+# Liste des produits a surveiller.
+# Ajouter un produit = ajouter une entree ci-dessous.
+#
+# Champs:
+#   name   : libelle lisible (utilise dans le mail)
+#   store  : cle d'adaptateur -> leroymerlin | darty | boulanger | generic
+#   url    : URL de la page produit
+#   mode   : store_pickup (retrait magasin) | online (dispo en ligne)
+#   enabled: true/false pour activer/desactiver sans supprimer
+
+settings:
+  # Pause entre deux produits (secondes) pour limiter la charge / l'anti-bot.
+  delay_between_products: 5
+  # Timeout de chargement de page (ms).
+  page_timeout_ms: 45000
+  # Lancer le navigateur en mode visible (debug local). Toujours headless en CI.
+  headless: true
+
+products:
+  # --- PRIORITE ABSOLUE ---
+  - name: "Climatiseur split mobile reversible PortaSplit Midea par OptiMea"
+    store: leroymerlin
+    url: "https://www.leroymerlin.fr/produits/climatiseur-split-mobile-reversible-portasplit-midea-par-optimea-93857579.html"
+    mode: store_pickup
+    enabled: true
+
+  # --- Exemples (bonus) : decommente et adapte les URL reelles ---
+  # - name: "Clim portative (exemple Darty)"
+  #   store: darty
+  #   url: "https://www.darty.com/nav/achat/..."
+  #   mode: online
+  #   enabled: false
+  #
+  # - name: "Clim portative (exemple Boulanger)"
+  #   store: boulanger
+  #   url: "https://www.boulanger.com/ref/..."
+  #   mode: online
+  #   enabled: false
