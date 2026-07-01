@@ -102,10 +102,37 @@ class Adapter:
         exec_path = os.environ.get("PLAYWRIGHT_CHROMIUM_PATH")
         if exec_path and os.path.exists(exec_path):
             launch_kwargs["executable_path"] = exec_path
+        # Proxy residentiel optionnel (ex. pour contourner DataDome depuis un datacenter).
+        # Format PROXY_URL : http://user:pass@host:port
+        proxy_url = os.environ.get("PROXY_URL")
+        if proxy_url:
+            launch_kwargs["proxy"] = {"server": proxy_url}
+            log.info("Utilisation d'un proxy pour Chromium")
         return p.chromium.launch(**launch_kwargs)
 
-    def goto(self, page: Page, url: str) -> None:
-        page.goto(url, wait_until="domcontentloaded", timeout=self.page_timeout_ms)
+    def goto(self, page: Page, url: str):
+        """Navigue vers l'URL et renvoie la reponse HTTP principale (ou None)."""
+        return page.goto(url, wait_until="domcontentloaded", timeout=self.page_timeout_ms)
+
+    def is_blocked(self, page: Page, response) -> bool:
+        """Detecte un VRAI mur anti-bot DataDome (pas la simple presence du SDK).
+
+        Signaux fiables : statut HTTP 403, ou presence de l'interstitiel captcha
+        (`captcha-delivery.com`) combinee a une page anormalement courte.
+        """
+        try:
+            status = response.status if response is not None else 0
+        except Exception:  # noqa: BLE001
+            status = 0
+        if status in (403, 405, 429):
+            return True
+        html = (page.content() or "")
+        low = html.lower()
+        # L'interstitiel DataDome charge geo.captcha-delivery.com ; une vraie page
+        # produit ne contient pas ce host (elle ne charge que le SDK js.datadome.co).
+        if "captcha-delivery.com" in low and len(html) < 15000:
+            return True
+        return False
 
     def accept_cookies(self, page: Page) -> None:
         """Tente de cliquer un bouton de consentement cookies (best-effort)."""

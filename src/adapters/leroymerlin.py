@@ -113,14 +113,11 @@ class LeroyMerlinAdapter(Adapter):
         # 1) Capture les reponses JSON d'API de dispo AVANT de naviguer.
         captured = self.capture_json_responses(page, _looks_like_availability_api)
 
-        self.goto(page, url)
+        response = self.goto(page, url)
         self.accept_cookies(page)
 
-        # Detection d'un mur anti-bot (DataDome) -> on signale une erreur, pas une rupture.
-        body_text = (page.content() or "").lower()
-        if "datadome" in body_text or "captcha-delivery" in body_text or (
-            "vous n'etes pas un robot" in body_text
-        ):
+        # Detection d'un VRAI mur anti-bot (403/captcha) -> erreur, pas rupture.
+        if self.is_blocked(page, response):
             return AvailabilityResult.failed("bloque par anti-bot (DataDome/captcha)")
 
         # Laisse le temps aux appels XHR de disponibilite de partir.

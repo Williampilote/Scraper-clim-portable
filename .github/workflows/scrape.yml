@@ -47,6 +47,8 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           MAIL_TO: ${{ secrets.MAIL_TO }}
+          # Optionnel : proxy residentiel pour contourner l'anti-bot depuis les IP GitHub.
+          PROXY_URL: ${{ secrets.PROXY_URL }}
           LOG_LEVEL: INFO
         run: python -m src.main --once
 

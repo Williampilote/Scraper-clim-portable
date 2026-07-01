@@ -35,12 +35,11 @@ class GenericAdapter(Adapter):
     store_key = "generic"
 
     def check(self, page: Page, product: dict[str, Any]) -> AvailabilityResult:
-        self.goto(page, product["url"])
+        response = self.goto(page, product["url"])
         self.accept_cookies(page)
         page.wait_for_timeout(3000)
 
-        body = (page.content() or "").lower()
-        if "datadome" in body or "captcha-delivery" in body:
+        if self.is_blocked(page, response):
             return AvailabilityResult.failed("bloque par anti-bot")
 
         try:
