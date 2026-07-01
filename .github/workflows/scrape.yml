@@ -1,9 +1,12 @@
 name: Suivi stock clim
 
 on:
-  schedule:
-    # Toutes les 15 minutes (heure UTC). GitHub peut decaler legerement.
-    - cron: "*/15 * * * *"
+  # NOTE : le cron est DESACTIVE car les IP datacenter de GitHub sont bloquees
+  # par l'anti-bot DataDome de Leroy Merlin (HTTP 403). La surveillance se fait
+  # en local sur le PC (voir GUIDE.md). Pour reactiver le 24/7 dans le cloud,
+  # ajoute un secret PROXY_URL (proxy residentiel) puis decommente le bloc ci-dessous.
+  # schedule:
+  #   - cron: "*/15 * * * *"
   workflow_dispatch: {}
 
 # Permet au job de committer state.json sur la branche.
